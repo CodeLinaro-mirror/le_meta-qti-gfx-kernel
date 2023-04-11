@@ -9,7 +9,7 @@ PR = "r0"
 
 DEPENDS = "rsync-native bc-native bison-native unifdef-native"
 
-do_configure[depends] += "virtual/kernel:do_shared_workdir"
+do_compile[depends] += "virtual/kernel:do_shared_workdir"
 do_compile[cleandirs] += "${WORKDIR}/out/${KERNEL_DEFCONFIG}"
 
 FILESPATH   =. "${WORKSPACE}:"
@@ -18,6 +18,8 @@ SRC_URI    +=  "file://vendor/qcom/opensource/graphics-kernel/"
 KERNEL_VERSION = "${@get_kernelversion_file("${STAGING_KERNEL_BUILDDIR}")}"
 
 S = "${WORKDIR}/vendor/qcom/opensource/graphics-kernel"
+
+do_configure[noexec] = "1"
 
 do_compile() {
     cd ${KERNEL_PLATFORM_PATH}
