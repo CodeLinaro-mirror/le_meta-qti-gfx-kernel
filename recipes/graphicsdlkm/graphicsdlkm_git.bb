@@ -2,45 +2,38 @@ DESCRIPTION = "QTI Graphics drivers"
 LICENSE = "GPL-2.0-only"
 LIC_FILES_CHKSUM = "file://${COREBASE}/meta/files/common-licenses/${LICENSE};md5=801f80980d171dd6425610833a22dbe6"
 
-inherit linux-kernel-base deploy
+inherit deploy module
 CLEANBROKEN = "1"
-
 PR = "r0"
 
-DEPENDS = "rsync-native bc-native bison-native unifdef-native"
 
-do_compile[depends] += "virtual/kernel:do_shared_workdir"
-do_compile[cleandirs] += "${WORKDIR}/out/${KERNEL_DEFCONFIG}"
+RPROVIDES:${PN} += "kernel-module-msm-kgsl-${KERNEL_VERSION}"
+FILESPATH =+ "${WORKSPACE}:"
+SRC_URI = "file://vendor/qcom/opensource/graphics-kernel"
+SRC_URI += "file://${THISDIR}/kgsl.rules"
 
-FILESPATH   =. "${WORKSPACE}:"
-SRC_URI    +=  "file://vendor/qcom/opensource/graphics-kernel/"
-
-KERNEL_VERSION = "${@get_kernelversion_file("${STAGING_KERNEL_BUILDDIR}")}"
 
 S = "${WORKDIR}/vendor/qcom/opensource/graphics-kernel"
 
-do_configure[noexec] = "1"
+EXTRA_OEMAKE += "TARGET_SUPPORT=${BASEMACHINE}"
+EXTRA_OEMAKE += "M=${S}"
+EXTRA_OEMAKE += "USE_DEDICATED_KERNEL_LE_TARGET=1"
+DEFAULT_PREFERENCE = "-1"
 
-do_compile() {
-    cd ${KERNEL_PLATFORM_PATH}
-    BUILD_CONFIG=msm-kernel/${KERNEL_CONFIG} \
-    EXT_MODULES=${@os.path.relpath("${S}", "${KERNEL_PLATFORM_PATH}")} \
-    MODULE_OUT=${WORKDIR}/vendor/qcom/opensource/graphics-kernel\
-    INPLACE_COMPILE=y \
-    KERNEL_KIT=${KERNEL_PREBUILT_PATH} \
-    OUT_DIR=${WORKDIR}/out/${KERNEL_DEFCONFIG} \
-    KERNEL_UAPI_HEADERS_DIR=${STAGING_KERNEL_BUILDDIR}\
-    ./build/build_module.sh
-}
+MAKE_TARGETS = "modules"
+KERNEL_MODULES = "msm_kgsl"
+
+do_configure[depends] += "virtual/kernel:do_shared_workdir"
+
+KERNEL_CC = "${STAGING_BINDIR_NATIVE}/clang/bin/clang -target ${TARGET_ARCH}${TARGET_VENDOR}-${TARGET_OS}"
 
 do_install() {
-    install -d ${D}${includedir}/linux
-    sed 's+scripts/unifdef+${LOC_UNIFDEF:-$(dirname $0)/unifdef}+g' ${KERNEL_PLATFORM_PATH}/msm-kernel/scripts/headers_install.sh > ${S}/headers_install.sh
-    python3 -u ${S}/gfx_kernel_headers.py --verbose --header_arch arm64 --gen_dir ${D}${includedir} --gfx_include_uapi ${S}/include/uapi/linux/*.h --unifdef $(which unifdef) --headers_install ${S}/headers_install.sh
-
-    install -d ${D}${nonarch_base_libdir}/modules/${KERNEL_VERSION}
-    install -m 0755 ${WORKDIR}/vendor/qcom/opensource/graphics-kernel/msm_kgsl.ko -D ${D}${nonarch_base_libdir}/modules/${KERNEL_VERSION}
-    install -m 0755 ${WORKDIR}/vendor/qcom/opensource/graphics-kernel/Module.symvers -D ${D}${nonarch_base_libdir}/modules/${KERNEL_VERSION}/graphics-kernel/Module.symvers
+  install -d ${D}${includedir}/linux
+  install -d ${D}${base_libdir}/modules/${KERNEL_VERSION}/
+  install -d ${D}${sysconfdir}/udev/rules.d
+  install -m 0755 ${S}/msm_kgsl.ko -D ${D}${base_libdir}/modules/${KERNEL_VERSION}/msm_kgsl.ko
+  install -m 0755 ${S}/Module.symvers -D ${D}${base_libdir}/modules/${KERNEL_VERSION}/Module.symvers
+  install -m 0644 ${THISDIR}/kgsl.rules -D ${D}${sysconfdir}/udev/rules.d/kgsl.rules
 }
 
 do_deploy() {
@@ -49,5 +42,6 @@ do_deploy() {
 }
 
 addtask do_deploy after do_install
-FILES:${PN} += "${nonarch_base_libdir}/modules/${KERNEL_VERSION}/*"
-FILES:${PN} += "${includedir}/*"
+FILES:${PN} += "${base_libdir}/modules/${KERNEL_VERSION}/*"
+FILES:${PN} += "${base_libdir}/modules/*"
+FILES:${PN} += "${sysconfdir}/udev/rules.d/kgsl.rules"
