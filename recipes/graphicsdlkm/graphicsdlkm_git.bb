@@ -33,6 +33,7 @@ do_install() {
   install -d ${D}${sysconfdir}/udev/rules.d
   install -m 0755 ${S}/msm_kgsl.ko -D ${D}${base_libdir}/modules/${KERNEL_VERSION}/msm_kgsl.ko
   install -m 0755 ${S}/Module.symvers -D ${D}${base_libdir}/modules/${KERNEL_VERSION}/Module.symvers
+  install -m 0644 ${THISDIR}/msm_kgsl.conf -D ${D}${sysconfdir}/modules-load.d/msm_kgsl.conf
   install -m 0644 ${THISDIR}/kgsl.rules -D ${D}${sysconfdir}/udev/rules.d/kgsl.rules
 }
 
@@ -45,3 +46,4 @@ addtask do_deploy after do_install
 FILES:${PN} += "${base_libdir}/modules/${KERNEL_VERSION}/*"
 FILES:${PN} += "${base_libdir}/modules/*"
 FILES:${PN} += "${sysconfdir}/udev/rules.d/kgsl.rules"
+FILES:${PN} += "${sysconfdir}/modules-load.d/msm_kgsl.conf"
