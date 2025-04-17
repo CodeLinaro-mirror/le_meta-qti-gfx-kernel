@@ -32,7 +32,7 @@ do_install() {
   install -d ${D}${base_libdir}/modules/${KERNEL_VERSION}/
   install -d ${D}${sysconfdir}/udev/rules.d
   install -m 0755 ${S}/msm_kgsl.ko -D ${D}${base_libdir}/modules/${KERNEL_VERSION}/msm_kgsl.ko
-  install -m 0755 ${S}/Module.symvers -D ${D}${base_libdir}/modules/${KERNEL_VERSION}/Module.symvers
+  #install -m 0755 ${S}/Module.symvers -D ${D}${includedir}/kernel-module-msm-kgsl/Module.symvers
   install -m 0644 ${THISDIR}/msm_kgsl.conf -D ${D}${sysconfdir}/modules-load.d/msm_kgsl.conf
   install -m 0644 ${THISDIR}/kgsl.rules -D ${D}${sysconfdir}/udev/rules.d/kgsl.rules
 }
