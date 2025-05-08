@@ -7,7 +7,7 @@ CLEANBROKEN = "1"
 
 PR = "r0"
 
-DEPENDS = "rsync-native bc-native bison-native unifdef-native"
+DEPENDS = "rsync-native bc-native bison-native unifdef-native mmdlkm"
 
 do_compile[depends] += "virtual/kernel:do_shared_workdir"
 do_compile[cleandirs] += "${WORKDIR}/out/${KERNEL_DEFCONFIG}"
@@ -22,7 +22,9 @@ S = "${WORKDIR}/vendor/qcom/opensource/graphics-kernel"
 do_configure[noexec] = "1"
 
 do_compile() {
+    LE_EXTRA_CFLAGS="-I${STAGING_DIR_HOST}/usr/include"
     cd ${KERNEL_PLATFORM_PATH}
+    LE_EXTRA_CFLAGS="${LE_EXTRA_CFLAGS}" \
     BUILD_CONFIG=msm-kernel/${KERNEL_CONFIG} \
     EXT_MODULES=${@os.path.relpath("${S}", "${KERNEL_PLATFORM_PATH}")} \
     MODULE_OUT=${WORKDIR}/vendor/qcom/opensource/graphics-kernel\
