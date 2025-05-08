@@ -1,0 +1,30 @@
+From 5c192836dcf7b4b96af318524fdb00afdf916386 Mon Sep 17 00:00:00 2001
+From: Kai Xing <kxing@qti.qualcomm.com>
+Date: Thu, 8 May 2025 14:36:52 +0800
+Subject: [PATCH] kgsl: build: Add mm-drvier header file to graphics-kernel for
+ Sun
+
+Add mm-drvier header file to build graphics-kernel for Sun
+
+Change-Id: I94327e07afe83bc81fa40c97f294f5a5797fdcc6
+Signed-off-by: Kai Xing <kxing@qti.qualcomm.com>
+---
+ Kbuild | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/Kbuild b/Kbuild
+index bb16ce5..f5e7a73 100644
+--- a/Kbuild
++++ b/Kbuild
+@@ -77,7 +77,7 @@ ifeq ($(CONFIG_ARCH_SUN), y)
+        include $(KGSL_PATH)/config/gki_sun.conf
+ endif
+ 
+-ccflags-y += -I$(KGSL_PATH) -I$(KGSL_PATH)/include/linux -I$(KGSL_PATH)/include -I$(KERNEL_SRC)/drivers/devfreq
++ccflags-y += -I$(KGSL_PATH) -I$(KGSL_PATH)/include/linux -I$(KGSL_PATH)/include -I$(KERNEL_SRC)/drivers/devfreq -I${WORKSPACE}/display/vendor/qcom/opensource/mm-drivers/hw_fence/include/
+ 
+ obj-$(CONFIG_QCOM_KGSL) += msm_kgsl.o
+ 
+-- 
+2.25.1
+

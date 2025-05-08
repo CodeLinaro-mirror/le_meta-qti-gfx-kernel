@@ -13,7 +13,9 @@ do_compile[depends] += "virtual/kernel:do_shared_workdir"
 do_compile[cleandirs] += "${WORKDIR}/out/${KERNEL_DEFCONFIG}"
 
 FILESPATH   =. "${WORKSPACE}:"
-SRC_URI    +=  "file://vendor/qcom/opensource/graphics-kernel/"
+SRC_URI    +=  "file://vendor/qcom/opensource/graphics-kernel/ \
+                file://0001-kgsl-build-Add-mm-drvier-header-file-to-graphics-ker.patch \
+"
 
 KERNEL_VERSION = "${@get_kernelversion_file("${STAGING_KERNEL_BUILDDIR}")}"
 
