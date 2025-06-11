@@ -7,7 +7,7 @@ CLEANBROKEN = "1"
 
 PR = "r0"
 
-DEPENDS = "rsync-native bc-native bison-native unifdef-native mmdlkm"
+DEPENDS = "rsync-native bc-native bison-native unifdef-native mmdlkm mmdlkm-headers synx-kernel synx-kernel-header"
 
 do_compile[depends] += "virtual/kernel:do_shared_workdir"
 do_compile[cleandirs] += "${WORKDIR}/out/${KERNEL_DEFCONFIG}"
@@ -32,7 +32,8 @@ do_compile() {
     KERNEL_KIT=${KERNEL_PREBUILT_PATH} \
     OUT_DIR=${WORKDIR}/out/${KERNEL_DEFCONFIG} \
     KERNEL_UAPI_HEADERS_DIR=${STAGING_KERNEL_BUILDDIR}\
-    ./build/build_module.sh
+    ./build/build_module.sh \
+    KBUILD_EXTRA_SYMBOLS+=${STAGING_DIR_HOST}/${nonarch_base_libdir}/modules/${KERNEL_VERSION}/synx-kernel/Module.symvers
 }
 
 do_install() {
