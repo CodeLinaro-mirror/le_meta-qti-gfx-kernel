@@ -7,15 +7,13 @@ CLEANBROKEN = "1"
 
 PR = "r0"
 
-DEPENDS = "rsync-native bc-native bison-native unifdef-native"
+DEPENDS = "rsync-native bc-native bison-native unifdef-native mmdlkm mmdlkm-headers synx-kernel synx-kernel-header"
 
 do_compile[depends] += "virtual/kernel:do_shared_workdir"
 do_compile[cleandirs] += "${WORKDIR}/out/${KERNEL_DEFCONFIG}"
 
 FILESPATH   =. "${WORKSPACE}:"
-SRC_URI    +=  "file://vendor/qcom/opensource/graphics-kernel/ \
-                file://0001-kgsl-build-Add-mm-drvier-header-file-to-graphics-ker.patch \
-"
+SRC_URI    +=  "file://vendor/qcom/opensource/graphics-kernel/"
 
 KERNEL_VERSION = "${@get_kernelversion_file("${STAGING_KERNEL_BUILDDIR}")}"
 
@@ -24,7 +22,9 @@ S = "${WORKDIR}/vendor/qcom/opensource/graphics-kernel"
 do_configure[noexec] = "1"
 
 do_compile() {
+    LE_EXTRA_CFLAGS="-I${STAGING_DIR_HOST}/usr/include"
     cd ${KERNEL_PLATFORM_PATH}
+    LE_EXTRA_CFLAGS="${LE_EXTRA_CFLAGS}" \
     BUILD_CONFIG=msm-kernel/${KERNEL_CONFIG} \
     EXT_MODULES=${@os.path.relpath("${S}", "${KERNEL_PLATFORM_PATH}")} \
     MODULE_OUT=${WORKDIR}/vendor/qcom/opensource/graphics-kernel\
@@ -32,7 +32,8 @@ do_compile() {
     KERNEL_KIT=${KERNEL_PREBUILT_PATH} \
     OUT_DIR=${WORKDIR}/out/${KERNEL_DEFCONFIG} \
     KERNEL_UAPI_HEADERS_DIR=${STAGING_KERNEL_BUILDDIR}\
-    ./build/build_module.sh
+    ./build/build_module.sh \
+    KBUILD_EXTRA_SYMBOLS+=${STAGING_DIR_HOST}/${nonarch_base_libdir}/modules/${KERNEL_VERSION}/synx-kernel/Module.symvers
 }
 
 do_install() {
