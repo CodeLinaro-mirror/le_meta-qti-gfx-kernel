@@ -13,6 +13,7 @@ DEPENDS:remove:vienna = "synx-kernel synx-kernel-header"
 
 do_compile[depends] += "virtual/kernel:do_shared_workdir"
 do_compile[cleandirs] += "${WORKDIR}/out/${KERNEL_DEFCONFIG}"
+do_compile[lockfiles] = "${TMPDIR}/build_modules.lock"
 
 FILESPATH   =. "${WORKSPACE}:"
 SRC_URI    +=  "file://vendor/qcom/opensource/graphics-kernel/"
@@ -30,6 +31,7 @@ do_compile() {
     INPLACE_COMPILE=y \
     OUT_DIR=${WORKDIR}/out/${KERNEL_DEFCONFIG} \
     KERNEL_KIT=${KERNEL_PREBUILT_PATH} \
+    VARIANT=${KERNEL_VARIANT} \
     TARGET_BOARD_PLATFORM=${TARGET_BOARD_PLATFORM} \
     ENABLE_DDK_BUILD=true \
     KERNEL_UAPI_HEADERS_DIR=${STAGING_KERNEL_BUILDDIR} \
