@@ -14,7 +14,7 @@ DEPENDS:remove:vienna = "synx-kernel synx-kernel-header"
 do_compile[depends] += "virtual/kernel:do_shared_workdir"
 do_compile[cleandirs] += "${WORKDIR}/out/${KERNEL_DEFCONFIG}"
 do_compile[lockfiles] = "${TMPDIR}/build_modules.lock"
-
+do_compile[network] = "1"
 FILESPATH   =. "${WORKSPACE}:"
 SRC_URI    +=  "file://vendor/qcom/opensource/graphics-kernel/"
 S = "${WORKDIR}/vendor/qcom/opensource/graphics-kernel"
