@@ -7,7 +7,8 @@ CLEANBROKEN = "1"
 PR = "r0"
 
 
-DEPENDS = "rsync-native bc-native bison-native unifdef-native mmdlkm mmdlkm-headers synx-kernel synx-kernel-header"
+DEPENDS = "${@bb.utils.contains('DDK_BUILD', 'true','', 'rsync-native', d)} bc-native bison-native unifdef-native mmdlkm mmdlkm-headers synx-kernel synx-kernel-header"
+
 DEPENDS:remove:qcs610-odk-64 = "mmdlkm-headers synx-kernel synx-kernel-header"
 DEPENDS:remove:vienna = "synx-kernel synx-kernel-header"
 
