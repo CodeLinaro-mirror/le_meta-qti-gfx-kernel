@@ -10,6 +10,7 @@ PR = "r0"
 DEPENDS = "${@bb.utils.contains('DDK_BUILD', 'true','', 'rsync-native', d)} bc-native bison-native unifdef-native mmdlkm mmdlkm-headers synx-kernel synx-kernel-header"
 
 DEPENDS:remove:qcs610-odk-64 = "mmdlkm-headers synx-kernel synx-kernel-header"
+DEPENDS:remove:qrbx210 = "synx-kernel synx-kernel-header"
 DEPENDS:remove:vienna = "synx-kernel synx-kernel-header mmdlkm-headers mmdlkm"
 
 do_compile[depends] += "virtual/kernel:do_shared_workdir"
