@@ -9,6 +9,7 @@ PR = "r0"
 
 DEPENDS = "rsync-native bc-native bison-native unifdef-native mmdlkm mmdlkm-headers synx-kernel synx-kernel-header"
 DEPENDS:remove:qcs610-odk-64 = "mmdlkm-headers synx-kernel synx-kernel-header"
+DEPENDS:remove:qrbx210 = "synx-kernel synx-kernel-header"
 DEPENDS:remove:vienna = "synx-kernel synx-kernel-header"
 
 do_compile[depends] += "virtual/kernel:do_shared_workdir"
