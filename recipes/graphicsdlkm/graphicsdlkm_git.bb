@@ -7,10 +7,11 @@ CLEANBROKEN = "1"
 PR = "r0"
 
 
-DEPENDS = "rsync-native bc-native bison-native unifdef-native mmdlkm mmdlkm-headers synx-kernel synx-kernel-header"
+DEPENDS = "${@bb.utils.contains('DDK_BUILD', 'true','', 'rsync-native', d)} bc-native bison-native unifdef-native mmdlkm mmdlkm-headers synx-kernel synx-kernel-header"
+
 DEPENDS:remove:qcs610-odk-64 = "mmdlkm-headers synx-kernel synx-kernel-header"
 DEPENDS:remove:qrbx210 = "synx-kernel synx-kernel-header"
-DEPENDS:remove:vienna = "synx-kernel synx-kernel-header"
+DEPENDS:remove:vienna = "synx-kernel synx-kernel-header mmdlkm-headers mmdlkm"
 
 do_compile[depends] += "virtual/kernel:do_shared_workdir"
 do_compile[cleandirs] += "${WORKDIR}/out/${KERNEL_DEFCONFIG}"
@@ -25,6 +26,14 @@ KERNEL_VERSION = "${@get_kernelversion_file("${STAGING_KERNEL_BUILDDIR}")}"
 do_configure[depends] += "virtual/kernel:do_shared_workdir"
 
 do_compile() {
+    if ${@bb.utils.contains('BASEMACHINE', 'vienna', 'true', 'false', d)}; then
+        if [ ! -L "${KERNEL_PLATFORM_PATH}/vendor" ]; then
+            ln -sf ${WORKSPACE}/vendor ${KERNEL_PLATFORM_PATH}/vendor
+        fi
+        if [ ! -L "${KERNEL_PLATFORM_PATH}/vendor/qcom/opensource/mm-drivers" ]; then
+            ln -sf ${WORKSPACE}/display/vendor/qcom/opensource/mm-drivers  ${WORKSPACE}/vendor/qcom/opensource/mm-drivers
+        fi
+    fi
     cd ${KERNEL_PLATFORM_PATH}
     BUILD_CONFIG=${KERNEL_BUILD_CONFIG} \
     EXT_MODULES=${@os.path.relpath("${S}", "${KERNEL_PLATFORM_PATH}")} \
