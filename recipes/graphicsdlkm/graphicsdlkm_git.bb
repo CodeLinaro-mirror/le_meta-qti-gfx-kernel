@@ -23,6 +23,9 @@ DEFAULT_PREFERENCE = "-1"
 MAKE_TARGETS = "modules"
 KERNEL_MODULES = "msm_kgsl"
 
+DEPENDS:append:seraph += "synx-kernel-header kernel-module-synx-kernel kernel-module-soc-repo"
+EXTRA_OEMAKE +=  "'EXTRA_CFLAGS += -I${STAGING_INCDIR}'"
+EXTRA_OEMAKE:append:seraph = " SOC_REPO=${KERNEL_PLATFORM_PATH}/${KERNEL_SRC_TYPE}/"
 do_configure[depends] += "virtual/kernel:do_shared_workdir"
 
 KERNEL_CC = "${STAGING_BINDIR_NATIVE}/clang/bin/clang -target ${TARGET_ARCH}${TARGET_VENDOR}-${TARGET_OS}"
