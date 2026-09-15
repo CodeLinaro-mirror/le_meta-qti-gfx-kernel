@@ -6,12 +6,11 @@ inherit deploy module
 CLEANBROKEN = "1"
 PR = "r0"
 
-
 RPROVIDES:${PN} += "kernel-module-msm-kgsl-${KERNEL_VERSION}"
+RPROVIDES:${PN}:remove:pebble = "kernel-module-msm-kgsl-${KERNEL_VERSION}"
 FILESPATH =+ "${WORKSPACE}:"
 SRC_URI = "file://vendor/qcom/opensource/graphics-kernel"
 SRC_URI += "file://${THISDIR}/kgsl.rules"
-
 
 S = "${WORKDIR}/vendor/qcom/opensource/graphics-kernel"
 
@@ -24,8 +23,11 @@ MAKE_TARGETS = "modules"
 KERNEL_MODULES = "msm_kgsl"
 
 DEPENDS:append:seraph += "synx-kernel-header kernel-module-synx-kernel kernel-module-soc-repo"
+DEPENDS:append:pebble += "bison-native kernel-module-mmdlkm mmdlkm-headers kernel-module-synx-kernel synx-kernel-header"
 EXTRA_OEMAKE +=  "'EXTRA_CFLAGS += -I${STAGING_INCDIR}'"
+EXTRA_OEMAKE:append:pebble = " KCFLAGS='-Wno-error=missing-prototypes'"
 EXTRA_OEMAKE:append:seraph = " SOC_REPO=${KERNEL_PLATFORM_PATH}/${KERNEL_SRC_TYPE}/"
+EXTRA_OEMAKE:append:pebble = " SOC_REPO=${KERNEL_PLATFORM_PATH}/${KERNEL_SRC_TYPE}/"
 do_configure[depends] += "virtual/kernel:do_shared_workdir"
 
 KERNEL_CC = "${STAGING_BINDIR_NATIVE}/clang/bin/clang -target ${TARGET_ARCH}${TARGET_VENDOR}-${TARGET_OS}"
@@ -48,5 +50,7 @@ do_deploy() {
 addtask do_deploy after do_install
 FILES:${PN} += "${base_libdir}/modules/${KERNEL_VERSION}/*"
 FILES:${PN} += "${base_libdir}/modules/*"
+FILES:${PN}:remove:pebble = "${base_libdir}/modules/${KERNEL_VERSION}/*"
+FILES:${PN}:remove:pebble = "${base_libdir}/modules/*"
 FILES:${PN} += "${sysconfdir}/udev/rules.d/kgsl.rules"
 FILES:${PN} += "${sysconfdir}/modules-load.d/msm_kgsl.conf"
